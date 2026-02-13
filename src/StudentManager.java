@@ -129,7 +129,7 @@ public class StudentManager {
         if (lastName != null && !lastName.trim().isEmpty()) {
             student.setLastName(lastName);
         }
-        if (gpa != null && gpa >= 0) {
+        if (gpa != null && gpa >= 0 && gpa <= 4.0) {
             student.setGpa(gpa);
         }
         
