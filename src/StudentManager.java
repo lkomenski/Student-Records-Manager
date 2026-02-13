@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * StudentManager class manages a collection of Student objects.
@@ -8,6 +7,7 @@ import java.util.Comparator;
  * and provides additional features like searching, sorting, and statistics.
  * Demonstrates use of ArrayList data structure and recursive algorithms.
  */
+
 public class StudentManager {
     private ArrayList<Student> students;
 
@@ -19,18 +19,63 @@ public class StudentManager {
     }
 
     /**
-     * Adds a new student to the list
-     * Validates that the student ID is unique before adding
-     * @param student The Student object to add
-     * @return true if added successfully, false if ID already exists
+     * Generates the next unique student ID in the format "S001", "S002", etc.
+     * @return The next student ID
      */
-    public boolean addStudent(Student student) {
-        // Check for duplicate ID
+    public String generateNextStudentId() {
+        int nextNum = getMaxIdNumber() + 1;
+        return String.format("S%03d", nextNum);
+    }
+
+    // Helper method to find the maximum numeric part of existing student IDs
+    private int getMaxIdNumber() {
+        int max = 0;
+        for (Student s : students) {
+            int n = parseIdNumberSafe(s.getStudentId());
+            if (n > max) max = n;
+        }
+        return max;
+    }
+
+    // Safely parses the numeric part of the student ID, returns 0 if format is invalid
+    private int parseIdNumberSafe(String id) {
+        if (id == null) return 0;
+        String cleaned = id.trim().toUpperCase();
+        if (!cleaned.matches("^S\\d{3}$")) return 0;
+        return Integer.parseInt(cleaned.substring(1));
+    }
+
+    /**
+     * Adds a new student with an automatically generated ID.
+     * @param firstname The first name of the student
+     * @param lastname The last name of the student
+     * @param gpa The GPA of the student
+     * @return The newly added Student object
+     * @throws StudentException if validation fails
+     */
+    public Student addStudentAutoId(String firstname, String lastname, double gpa) throws StudentException {
+        String newId = generateNextStudentId();
+        Student student = new Student(newId, firstname, lastname, gpa);
+        addStudent(student);
+        return student;
+    }
+
+    /**
+     * Adds a new student to the list with validation and error handling.
+     * @param student The Student object to add
+     * @throws StudentException if validation fails
+     */
+    public void addStudent(Student student) throws StudentException {
+        if (student == null) {
+            throw new StudentException("Student cannot be null.");
+        }
+        if (student.getGpa() < 0.0 || student.getGpa() > 4.0) {
+            throw new InvalidGpaException(student.getGpa());
+        }
         if (findStudentById(student.getStudentId()) != null) {
-            return false; // Duplicate ID found
+            throw new DuplicateStudentIdException(student.getStudentId());
         }
         students.add(student);
-        return true;
     }
 
     /**
@@ -66,8 +111,9 @@ public class StudentManager {
      * @return Student object if found, null otherwise
      */
     public Student findStudentById(String studentId) {
+        if (studentId == null) return null;
         for (Student student : students) {
-            if (student.getStudentId().equalsIgnoreCase(studentId)) {
+            if (student.getStudentId().equalsIgnoreCase(studentId.trim())) {
                 return student;
             }
         }
@@ -110,84 +156,71 @@ public class StudentManager {
     }
 
     /**
-     * Updates a student's information
+     * Updates a student's information.
      * @param studentId ID of the student to update
-     * @param firstName New first name (or null to keep unchanged)
-     * @param lastName New last name (or null to keep unchanged)
-     * @param gpa New GPA (or -1 to keep unchanged)
-     * @return true if updated successfully, false if student not found
+     * @param firstName New first name (blank to keep unchanged)
+     * @param lastName New last name (blank to keep unchanged)
+     * @param gpa New GPA (null to keep unchanged)
+     * @throws StudentException if student not found or GPA invalid
      */
-    public boolean updateStudent(String studentId, String firstName, String lastName, Double gpa) {
+    public void updateStudent(String studentId, String firstName, String lastName, Double gpa) throws StudentException {
         Student student = findStudentById(studentId);
         if (student == null) {
-            return false;
+            throw new StudentNotFoundException(studentId);
         }
-        
+
         if (firstName != null && !firstName.trim().isEmpty()) {
             student.setFirstName(firstName);
         }
         if (lastName != null && !lastName.trim().isEmpty()) {
             student.setLastName(lastName);
         }
-        if (gpa != null && gpa >= 0 && gpa <= 4.0) {
+        if (gpa != null) {
+            if (gpa < 0.0 || gpa > 4.0) {
+                throw new InvalidGpaException(gpa);
+            }
             student.setGpa(gpa);
         }
-        
-        return true;
     }
 
+
     /**
-     * Removes a student from the system
+     * Removes a student from the system with confirmation.
      * @param studentId ID of the student to remove
-     * @return true if removed successfully, false if student not found
+     * @param confirmed Must be true to confirm deletion (prevents accidental deletions)
+     * @throws StudentException if student not found or confirmation not provided
      */
-    public boolean removeStudent(String studentId) {
+    public void removeStudent(String studentId, boolean confirmed) throws StudentException {
+        if (!confirmed) {
+            throw new StudentException("Deletion must be confirmed. Set confirmed=true to proceed.");
+        }
+        
         Student student = findStudentById(studentId);
         if (student == null) {
-            return false;
+            throw new StudentNotFoundException(studentId);
         }
         students.remove(student);
-        return true;
     }
 
     /**
      * Sorts students by student ID
      */
     public void sortByStudentId() {
-        Collections.sort(students, new Comparator<Student>() {
-            @Override
-            public int compare(Student s1, Student s2) {
-                return s1.getStudentId().compareTo(s2.getStudentId());
-            }
-        });
+        Collections.sort(students);
     }
 
     /**
      * Sorts students by last name
      */
     public void sortByLastName() {
-        Collections.sort(students, new Comparator<Student>() {
-            @Override
-            public int compare(Student s1, Student s2) {
-                int lastNameComparison = s1.getLastName().compareTo(s2.getLastName());
-                if (lastNameComparison != 0) {
-                    return lastNameComparison;
-                }
-                return s1.getFirstName().compareTo(s2.getFirstName());
-            }
-        });
+        students.sort(Student.BY_LAST_NAME_THEN_FIRST);
     }
 
     /**
      * Sorts students by GPA in descending order (highest first)
      */
     public void sortByGPA() {
-        Collections.sort(students, new Comparator<Student>() {
-            @Override
-            public int compare(Student s1, Student s2) {
-                return Double.compare(s2.getGpa(), s1.getGpa()); // Descending order
-            }
-        });
+        students.sort(Student.BY_GPA_DESC);
     }
 
     /**

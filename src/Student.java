@@ -3,7 +3,9 @@
  * This class demonstrates Object-Oriented Programming principles with
  * encapsulation (private fields) and public accessor methods.
  */
-public class Student {
+import java.util.Comparator;
+
+public class Student implements Comparable<Student> {
     private String studentId;
     private String firstName;
     private String lastName;
@@ -76,4 +78,33 @@ public class Student {
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
+    /** 
+     * Compares this student to another based on student ID (case-insensitive).
+     * This allows sorting by student ID in ascending order.
+     */
+
+    /**
+     * Default sort order: Student ID ascending (case-insensitive).
+     */
+    @Override
+    public int compareTo(Student other) {
+        return this.getStudentId().compareToIgnoreCase(other.getStudentId());
+    }
+
+    /**
+     * Sort by last name, then first name, then ID (case-insensitive).
+     */
+    public static final Comparator<Student> BY_LAST_NAME_THEN_FIRST =
+            Comparator.comparing(Student::getLastName, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(Student::getFirstName, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(Student::getStudentId, String.CASE_INSENSITIVE_ORDER);
+
+    /**
+     * Sort by GPA descending, then last name, then first name.
+     */
+    public static final Comparator<Student> BY_GPA_DESC =
+            Comparator.comparingDouble(Student::getGpa).reversed()
+                    .thenComparing(Student::getLastName, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(Student::getFirstName, String.CASE_INSENSITIVE_ORDER);
 }

@@ -43,10 +43,14 @@ public class App {
      * Adds sample student data for testing purposes
      */
     private static void addSampleData() {
-        manager.addStudent(new Student("S001", "John", "Doe", 3.5));
-        manager.addStudent(new Student("S002", "Jane", "Smith", 3.8));
-        manager.addStudent(new Student("S003", "Alice", "Johnson", 3.2));
-        System.out.println("Sample data loaded: 3 students added.\n");
+        try {
+            manager.addStudent(new Student("S001", "John", "Doe", 3.5));
+            manager.addStudent(new Student("S002", "Jane", "Smith", 3.8));
+            manager.addStudent(new Student("S003", "Alice", "Johnson", 3.2));
+            System.out.println("Sample data loaded: 3 students added.\n");
+        } catch (StudentException e) {
+            System.out.println("Error loading sample data: " + e.getMessage());
+        }
     }
 
     /**
@@ -155,25 +159,6 @@ public class App {
     private static void addStudent() {
         System.out.println("=== ADD NEW STUDENT ===");
         
-        // Get and validate Student ID
-        String studentId;
-        while (true) {
-            System.out.print("Enter Student ID: ");
-            studentId = scanner.nextLine().trim();
-            
-            if (studentId.isEmpty()) {
-                System.out.println("Error: Student ID cannot be empty!");
-                continue;
-            }
-            
-            if (manager.findStudentById(studentId) != null) {
-                System.out.println("Error: Student ID already exists! Please use a different ID.");
-                continue;
-            }
-            
-            break;
-        }
-        
         // Get and validate First Name
         String firstName;
         while (true) {
@@ -223,12 +208,12 @@ public class App {
         }
         
         // Create and add the student
-        Student newStudent = new Student(studentId, firstName, lastName, gpa);
-        if (manager.addStudent(newStudent)) {
+        try {
+            Student newStudent = manager.addStudentAutoId(firstName, lastName, gpa);
             System.out.println("\n✓ Student added successfully!");
             System.out.println(newStudent);
-        } else {
-            System.out.println("\n✗ Failed to add student!");
+        } catch (StudentException e) {
+            System.out.println("\n✗ Failed to add student: " + e.getMessage());
         }
     }
 
@@ -327,11 +312,12 @@ public class App {
             }
         }
         
-        if (manager.updateStudent(studentId, firstName, lastName, gpa)) {
+        try {
+            manager.updateStudent(studentId, firstName, lastName, gpa);
             System.out.println("\n✓ Student updated successfully!");
             System.out.println(manager.findStudentById(studentId));
-        } else {
-            System.out.println("\n✗ Failed to update student!");
+        } catch (StudentException e) {
+            System.out.println("\n✗ Failed to update student: " + e.getMessage());
         }
     }
 
@@ -355,10 +341,11 @@ public class App {
         String confirmation = scanner.nextLine().trim().toLowerCase();
         
         if (confirmation.equals("yes") || confirmation.equals("y")) {
-            if (manager.removeStudent(studentId)) {
+            try {
+                manager.removeStudent(studentId, true);
                 System.out.println("\n✓ Student removed successfully!");
-            } else {
-                System.out.println("\n✗ Failed to remove student!");
+            } catch (StudentException e) {
+                System.out.println("\n✗ Failed to remove student: " + e.getMessage());
             }
         } else {
             System.out.println("\nRemoval cancelled.");
