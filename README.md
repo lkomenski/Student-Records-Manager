@@ -5,7 +5,7 @@ This project demonstrates Object-Oriented Programming, `ArrayList` usage, recurs
 
 ---
 
-## 🎯 Two Versions Available
+## Two Versions Available
 
 1. **Console Version** (`App.java`) - Text-based menu interface
 2. **JavaFX GUI Version** (`AppGUI.java`) - Modern graphical interface with tables, buttons, and dialogs
