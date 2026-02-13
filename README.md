@@ -126,15 +126,15 @@ gradle run
 ## GUI Features
 
 The JavaFX version (`AppGUI.java`) includes:
-- ✅ **TableView** displaying all students with sortable columns
-- ✅ **Add Student Dialog** with auto-generated IDs and validation
-- ✅ **Search Dialogs** for ID and last name (uses recursive search)
-- ✅ **Update Dialog** pre-filled with current student data
-- ✅ **Remove Confirmation** dialog for safe deletion
-- ✅ **Sort Options** dialog with multiple criteria
-- ✅ **Statistics Window** showing recursive GPA counts
-- ✅ **Status Bar** for feedback messages
-- ✅ **Error Handling** with user-friendly alert dialogs
+- **TableView** displaying all students with sortable columns
+- **Add Student Dialog** with auto-generated IDs and validation
+- **Search Dialogs** for ID and last name (uses recursive search)
+- **Update Dialog** pre-filled with current student data
+- **Remove Confirmation** dialog for safe deletion
+- **Sort Options** dialog with multiple criteria
+- **Statistics Window** showing recursive GPA counts
+- **Status Bar** for feedback messages
+- **Error Handling** with user-friendly alert dialogs
 
 All recursive methods, validation logic, and functionality from the console version are preserved in the GUI.
 
