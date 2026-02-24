@@ -1,18 +1,8 @@
 # JavaFX Setup Guide
 
-## What You Have
-✅ **AppGUI.java** - Complete JavaFX GUI with all features from console version  
-✅ All business logic preserved (Student, StudentManager, exceptions)  
-✅ All comments and recursive methods intact  
-
-## What You Need
-❌ JavaFX SDK (not installed)
-
----
-
 ## Setup Options
 
-### Option 1: Use Java 11+ with Bundled JavaFX (Easiest)
+### Option 1: Use Java 11+ with Bundled JavaFX
 Some JDK distributions include JavaFX:
 - **Azul Zulu FX** - https://www.azul.com/downloads/?package=jdk-fx
 - **Liberica Full JDK** - https://bell-sw.com/pages/downloads/
@@ -82,7 +72,7 @@ mvn clean javafx:run
 
 ---
 
-### Option 4: VS Code Configuration (Already Done!)
+### Option 4: VS Code Configuration 
 A `.vscode/launch.json` file has been created with two configurations:
 1. **Launch Console App** - Runs App.java (no JavaFX needed)
 2. **Launch JavaFX GUI** - Runs AppGUI.java (requires JavaFX)
@@ -116,23 +106,22 @@ Once JavaFX is set up, you should see:
 
 ## Features in GUI Version
 All console features are preserved:
-- ✅ Add Student (auto-generated ID)
-- ✅ Search by ID
-- ✅ Search by Last Name (RECURSIVE)
-- ✅ Update Student
-- ✅ Remove Student (with confirmation)
-- ✅ Sort (ID, Name, GPA)
-- ✅ Statistics (with RECURSIVE GPA counting)
-- ✅ Full input validation
-- ✅ Error handling with dialogs
+- Add Student (auto-generated ID)
+- Search by ID
+- Search by Last Name (RECURSIVE)
+- Update Student
+- Remove Student (with confirmation)
+- Sort (ID, Name, GPA)
+- Statistics (with RECURSIVE GPA counting)
+- Full input validation
+- Error handling with dialogs
 
 ---
 
 ## If You Get Stuck
-The console version (`App.java`) still works perfectly without JavaFX!
+The console version (`App.java`) still works perfectly without JavaFX
 ```bash
 javac App.java Student.java StudentManager.java StudentException.java
 java App
 ```
 
-Both versions fulfill all course requirements. The GUI is a bonus feature! 🎉
