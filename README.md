@@ -4,6 +4,14 @@ A Java application for managing student records with both **Console** and **Java
 
 ---
 
+## Prerequisites
+
+- **Java JDK 8+** (required for both versions)
+- **JavaFX SDK** (required for GUI version only) - [Download here](https://gluonhq.com/products/javafx/)
+- **JUnit 5** (included in `lib/` folder for testing)
+
+---
+
 ## How to Run
 
 ### Console Version
