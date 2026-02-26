@@ -50,3 +50,6 @@ bin/
 
 # Windows
 Thumbs.db
+# CSV Files (generated/test data)
+*.csv
+!sample_data.csv

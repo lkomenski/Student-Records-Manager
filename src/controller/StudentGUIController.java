@@ -1,6 +1,15 @@
+package controller;
+
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import model.Student;
+import manager.StudentManager;
+import view.StudentGUIView;
+import util.InputValidator;
 import exceptions.StudentException;
 
 /**
@@ -27,13 +36,33 @@ public class StudentGUIController {
     }
 
     /**
-     * Adds sample student data for testing purposes
+     * Loads sample student data for testing purposes.
+     * Attempts to load from sample_data.csv file; falls back to hardcoded data if file not found.
+     * This demonstrates the CSV loading functionality in action.
      */
-    public void addSampleData() {
+    public void loadSampleData() {
+        // Try to load from CSV file first (demonstrates CSV functionality)
+        try {
+            int count = manager.loadFromCSV("sample_data.csv");
+            view.showInfo("Sample Data Loaded", 
+                "Sample data loaded from CSV: " + count + " students added.");
+            refreshTable();
+            return; // Successfully loaded from CSV
+        } catch (java.io.FileNotFoundException e) {
+            // File not found - fall back to hardcoded data
+            view.updateStatus("sample_data.csv not found. Loading default sample data...");
+        } catch (java.io.IOException e) {
+            // Other I/O error - fall back to hardcoded data
+            view.updateStatus("Error reading sample_data.csv. Loading default sample data...");
+        }
+        
+        // Fallback: Add hardcoded sample data if CSV loading failed
         try {
             manager.addStudent(new Student("S001", "John", "Doe", 3.5));
             manager.addStudent(new Student("S002", "Jane", "Smith", 3.8));
             manager.addStudent(new Student("S003", "Alice", "Johnson", 3.2));
+            view.showInfo("Sample Data Loaded", "Default sample data loaded: 3 students added.");
+            refreshTable();
         } catch (StudentException e) {
             view.showError("Error loading sample data", e.getMessage());
         }
@@ -61,28 +90,30 @@ public class StudentGUIController {
         String lastName = input[1];
         String gpaText = input[2];
 
-        // Validate first name
-        if (firstName.isEmpty()) {
-            view.showError("Validation Error", "First name cannot be empty!");
+        // Validate first name using InputValidator
+        String firstNameError = InputValidator.getNonEmptyErrorMessage(firstName, "First name");
+        if (firstNameError != null) {
+            view.showError("Validation Error", firstNameError);
             return;
         }
 
-        // Validate last name
-        if (lastName.isEmpty()) {
-            view.showError("Validation Error", "Last name cannot be empty!");
+        // Validate last name using InputValidator
+        String lastNameError = InputValidator.getNonEmptyErrorMessage(lastName, "Last name");
+        if (lastNameError != null) {
+            view.showError("Validation Error", lastNameError);
             return;
         }
 
-        // Validate and parse GPA
-        double gpa;
-        try {
-            gpa = Double.parseDouble(gpaText);
-            if (gpa < 0.0 || gpa > 4.0) {
-                view.showError("Validation Error", "GPA must be between 0.0 and 4.0!");
-                return;
+        // Validate and parse GPA using InputValidator
+        Double gpa = InputValidator.parseDoubleInRange(gpaText, InputValidator.MIN_GPA, InputValidator.MAX_GPA);
+        if (gpa == null) {
+            if (!InputValidator.isNonEmpty(gpaText)) {
+                view.showError("Validation Error", "GPA cannot be empty!");
+            } else if (InputValidator.parseDouble(gpaText) == null) {
+                view.showError("Validation Error", "Please enter a valid number for GPA!");
+            } else {
+                view.showError("Validation Error", InputValidator.getGPAErrorMessage(0));
             }
-        } catch (NumberFormatException e) {
-            view.showError("Validation Error", "Please enter a valid number for GPA!");
             return;
         }
 
@@ -103,7 +134,7 @@ public class StudentGUIController {
     public void handleSearchById() {
         String studentId = view.showSearchByIdDialog(primaryStage);
         
-        if (studentId == null || studentId.trim().isEmpty()) {
+        if (!InputValidator.isNonEmpty(studentId)) {
             return; // Cancelled or empty
         }
 
@@ -124,7 +155,7 @@ public class StudentGUIController {
     public void handleSearchByLastName() {
         String lastName = view.showSearchByLastNameDialog(primaryStage);
         
-        if (lastName == null || lastName.trim().isEmpty()) {
+        if (!InputValidator.isNonEmpty(lastName)) {
             if (lastName != null) {
                 view.showError("Validation Error", "Last name cannot be empty!");
             }
@@ -158,7 +189,7 @@ public class StudentGUIController {
         String studentId = view.showGetStudentIdDialog(primaryStage, "Update Student", 
                                                        "Enter Student ID to update");
         
-        if (studentId == null || studentId.trim().isEmpty()) {
+        if (!InputValidator.isNonEmpty(studentId)) {
             return; // Cancelled
         }
 
@@ -179,17 +210,16 @@ public class StudentGUIController {
         String lastName = input[1];
         String gpaText = input[2];
 
-        // Parse GPA (if provided)
+        // Parse GPA (if provided) using InputValidator
         Double gpa = null;
-        if (!gpaText.isEmpty()) {
-            try {
-                gpa = Double.parseDouble(gpaText);
-                if (gpa < 0.0 || gpa > 4.0) {
-                    view.showError("Validation Error", "GPA must be between 0.0 and 4.0!");
-                    return;
+        if (InputValidator.isNonEmpty(gpaText)) {
+            gpa = InputValidator.parseDoubleInRange(gpaText, InputValidator.MIN_GPA, InputValidator.MAX_GPA);
+            if (gpa == null) {
+                if (InputValidator.parseDouble(gpaText) == null) {
+                    view.showError("Validation Error", "Please enter a valid number for GPA!");
+                } else {
+                    view.showError("Validation Error", InputValidator.getGPAErrorMessage(0));
                 }
-            } catch (NumberFormatException e) {
-                view.showError("Validation Error", "Please enter a valid number for GPA!");
                 return;
             }
         }
@@ -214,7 +244,7 @@ public class StudentGUIController {
         String studentId = view.showGetStudentIdDialog(primaryStage, "Remove Student", 
                                                        "Enter Student ID to remove");
         
-        if (studentId == null || studentId.trim().isEmpty()) {
+        if (!InputValidator.isNonEmpty(studentId)) {
             return; // Cancelled
         }
 
@@ -302,5 +332,78 @@ public class StudentGUIController {
 
         view.showInfo("Statistics", stats.toString());
         view.updateStatus("Statistics displayed");
+    }
+
+    /**
+     * Handles saving student data to CSV file
+     */
+    public void handleSaveToCSV() {
+        if (manager.getStudentCount() == 0) {
+            view.showWarning("No Data", "No students to save. Add some students first.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Students to CSV");
+        fileChooser.setInitialFileName("students.csv");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        );
+
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                manager.saveToCSV(file.getAbsolutePath());
+                view.showInfo("Success", 
+                    "Successfully saved " + manager.getStudentCount() + " students to:\n" + file.getName());
+                view.updateStatus("✓ Saved " + manager.getStudentCount() + " students to " + file.getName());
+            } catch (IOException e) {
+                view.showError("Save Failed", "Failed to save file: " + e.getMessage());
+                view.updateStatus("✗ Failed to save file");
+            }
+        }
+    }
+
+    /**
+     * Handles loading student data from CSV file
+     */
+    public void handleLoadFromCSV() {
+        // Warn if data exists
+        if (manager.getStudentCount() > 0) {
+            boolean confirmed = view.showConfirmation(
+                "Confirm Load",
+                "Warning: Loading will REPLACE all current students!\n\n" +
+                "Current students: " + manager.getStudentCount() + "\n\n" +
+                "Do you want to continue?"
+            );
+            
+            if (!confirmed) {
+                view.updateStatus("Load cancelled");
+                return;
+            }
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Students from CSV");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        );
+
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if (file != null) {
+            try {
+                int count = manager.loadFromCSV(file.getAbsolutePath());
+                refreshTable();
+                view.showInfo("Success", 
+                    "Successfully loaded " + count + " students from:\n" + file.getName());
+                view.updateStatus("✓ Loaded " + count + " students from " + file.getName());
+            } catch (java.io.FileNotFoundException e) {
+                view.showError("File Not Found", "File not found: " + file.getName());
+                view.updateStatus("✗ File not found");
+            } catch (IOException e) {
+                view.showError("Load Failed", "Failed to load file: " + e.getMessage());
+                view.updateStatus("✗ Failed to load file");
+            }
+        }
     }
 }

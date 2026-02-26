@@ -1,5 +1,9 @@
+package view;
+
 import java.util.List;
 import java.util.Scanner;
+
+import model.Student;
 
 /**
  * StudentView - Console View Layer (MVC Pattern)
@@ -44,7 +48,9 @@ public class StudentView {
         System.out.println("6. Remove a student");
         System.out.println("7. Sort students");
         System.out.println("8. View statistics");
-        System.out.println("9. Quit");
+        System.out.println("9. Save to CSV file");
+        System.out.println("10. Load from CSV file");
+        System.out.println("11. Quit");
         System.out.println("-".repeat(60));
     }
 
@@ -132,23 +138,23 @@ public class StudentView {
     /**
      * Prompts for menu choice with validation
      * Uses recursion for input validation
-     * @return Valid menu choice (1-9)
+     * @return Valid menu choice (1-11)
      */
     public int promptForMenuChoice() {
-        System.out.print("Enter your choice (1-9): ");
+        System.out.print("Enter your choice (1-11): ");
         
         if (scanner.hasNextInt()) {
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
             
-            if (choice >= 1 && choice <= 9) {
+            if (choice >= 1 && choice <= 11) {
                 return choice;
             }
         } else {
             scanner.nextLine(); // Clear invalid input
         }
         
-        System.out.println("Invalid input! Please enter a number between 1 and 9.");
+        System.out.println("Invalid input! Please enter a number between 1 and 11.");
         return promptForMenuChoice(); // Recursive call
     }
 
@@ -304,5 +310,15 @@ public class StudentView {
         printMessage("Students with GPA > 3.5: " + above35);
         printMessage("Students with GPA > 3.0: " + above30);
         printMessage("Students with GPA > 2.5: " + above25);
+    }
+
+    /**
+     * Prompts for a filename
+     * @param prompt The prompt message to display
+     * @return The filename entered by the user
+     */
+    public String promptForFilename(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
     }
 }

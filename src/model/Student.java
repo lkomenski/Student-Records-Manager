@@ -1,3 +1,7 @@
+package model;
+
+import java.util.Comparator;
+
 /**
  * Student class represents a student record with ID, name, and GPA.
  * This class demonstrates Object-Oriented Programming principles with
@@ -5,8 +9,6 @@
  * 
  * @author Leena Komenski
  */
-import java.util.Comparator;
-
 public class Student implements Comparable<Student> {
     private String studentId;
     private String firstName;

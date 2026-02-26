@@ -1,9 +1,14 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import model.Student;
+import manager.StudentManager;
 import exceptions.DuplicateStudentIdException;
 import exceptions.InvalidGpaException;
 import exceptions.StudentException;
@@ -361,4 +366,133 @@ class StudentManagerTest {
         assertTrue(exception.getMessage().contains("S999"),
                   "Exception should mention the student ID");
     }
+
+    // ==================== CSV FILE PERSISTENCE TESTS ====================
+    
+    /**
+     * Verify saving students to CSV file works correctly
+     */
+    @Test
+    @DisplayName("CSV: Save students to file")
+    void testSaveToCSV() throws StudentException, IOException {
+        // Arrange: Add multiple students
+        manager.addStudent(new Student("S001", "Alice", "Johnson", 3.9));
+        manager.addStudent(new Student("S002", "Bob", "Smith", 3.5));
+        manager.addStudent(new Student("S003", "Carol", "Williams", 3.7));
+        
+        String testFile = "test_save.csv";
+        
+        // Act: Save to CSV
+        manager.saveToCSV(testFile);
+        
+        // Assert: Verify file was created
+        File file = new File(testFile);
+        assertTrue(file.exists(), "CSV file should be created");
+        assertTrue(file.length() > 0, "CSV file should not be empty");
+        
+        // Cleanup
+        file.delete();
+    }
+    
+    /**
+     * Verify loading students from CSV file works correctly
+     */
+    @Test
+    @DisplayName("CSV: Load students from file")
+    void testLoadFromCSV() throws StudentException, IOException {
+        // Arrange: Create and save test data
+        manager.addStudent(new Student("S001", "Alice", "Johnson", 3.9));
+        manager.addStudent(new Student("S002", "Bob", "Smith", 3.5));
+        
+        String testFile = "test_load.csv";
+        manager.saveToCSV(testFile);
+        
+        // Clear the manager
+        StudentManager newManager = new StudentManager();
+        assertEquals(0, newManager.getStudentCount(), "New manager should be empty");
+        
+        // Act: Load from CSV
+        int count = newManager.loadFromCSV(testFile);
+        
+        // Assert: Verify students were loaded
+        assertEquals(2, count, "Should load 2 students");
+        assertEquals(2, newManager.getStudentCount(), "Manager should have 2 students");
+        assertNotNull(newManager.findStudentById("S001"), "Should find S001");
+        assertNotNull(newManager.findStudentById("S002"), "Should find S002");
+        assertEquals("Alice", newManager.findStudentById("S001").getFirstName());
+        assertEquals(3.5, newManager.findStudentById("S002").getGpa(), 0.01);
+        
+        // Cleanup
+        new File(testFile).delete();
+    }
+    
+    /**
+     * Verify CSV load/save round-trip preserves data
+     */
+    @Test
+    @DisplayName("CSV: Round-trip save and load preserves data")
+    void testCSVRoundTrip() throws StudentException, IOException {
+        // Arrange: Create test data
+        manager.addStudent(new Student("S001", "David", "Miller", 3.2));
+        manager.addStudent(new Student("S002", "Emma", "Davis", 3.8));
+        manager.addStudent(new Student("S003", "Frank", "Wilson", 3.5));
+        
+        String testFile = "test_roundtrip.csv";
+        
+        // Act: Save and reload
+        manager.saveToCSV(testFile);
+        StudentManager reloadedManager = new StudentManager();
+        reloadedManager.loadFromCSV(testFile);
+        
+        // Assert: Verify all data is preserved
+        assertEquals(3, reloadedManager.getStudentCount(), "Should have 3 students");
+        
+        Student david = reloadedManager.findStudentById("S001");
+        assertNotNull(david, "Should find David");
+        assertEquals("David", david.getFirstName());
+        assertEquals("Miller", david.getLastName());
+        assertEquals(3.2, david.getGpa(), 0.01);
+        
+        Student emma = reloadedManager.findStudentById("S002");
+        assertNotNull(emma, "Should find Emma");
+        assertEquals("Emma", emma.getFirstName());
+        assertEquals("Davis", emma.getLastName());
+        assertEquals(3.8, emma.getGpa(), 0.01);
+        
+        // Cleanup
+        new File(testFile).delete();
+    }
+    
+    /**
+     * Verify sample_data.csv file exists and can be loaded (used by application startup)
+     */
+    @Test
+    @DisplayName("CSV: Load sample_data.csv file")
+    void testLoadSampleDataCSV() throws IOException {
+        // Arrange: Verify file exists
+        File sampleFile = new File("sample_data.csv");
+        
+        // Assert: File should exist in project root
+        assertTrue(sampleFile.exists(), 
+            "sample_data.csv should exist in project root for application startup");
+        
+        // Act: Load the sample data file
+        int count = manager.loadFromCSV("sample_data.csv");
+        
+        // Assert: Verify expected sample data is loaded
+        assertTrue(count >= 3, "Should load at least 3 sample students");
+        assertEquals(count, manager.getStudentCount(), "Student count should match loaded count");
+        
+        // Verify specific expected students from sample_data.csv
+        assertNotNull(manager.findStudentById("S001"), "Should find S001 (John Doe)");
+        assertNotNull(manager.findStudentById("S002"), "Should find S002 (Jane Smith)");
+        assertNotNull(manager.findStudentById("S003"), "Should find S003 (Alice Johnson)");
+        
+        // Verify data integrity of first sample student
+        Student john = manager.findStudentById("S001");
+        assertEquals("John", john.getFirstName(), "First student should be John");
+        assertEquals("Doe", john.getLastName(), "First student last name should be Doe");
+        assertEquals(3.5, john.getGpa(), 0.01, "John's GPA should be 3.5");
+    }
 }
+

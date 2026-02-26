@@ -1,3 +1,5 @@
+package view;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -8,6 +10,8 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import model.Student;
 
 /**
  * StudentGUIView - JavaFX View Layer (MVC Pattern)
@@ -31,7 +35,7 @@ public class StudentGUIView {
     public BorderPane createMainLayout(Stage primaryStage, 
                                       Runnable onAdd, Runnable onSearchId, Runnable onSearchName,
                                       Runnable onUpdate, Runnable onRemove, Runnable onSort,
-                                      Runnable onStats, Runnable onRefresh) {
+                                      Runnable onStats, Runnable onSaveCSV, Runnable onLoadCSV, Runnable onRefresh) {
         BorderPane mainLayout = new BorderPane();
         mainLayout.setPadding(new Insets(10));
 
@@ -45,7 +49,8 @@ public class StudentGUIView {
 
         // Right: Action buttons
         VBox rightSection = createRightSection(primaryStage, onAdd, onSearchId, onSearchName,
-                                               onUpdate, onRemove, onSort, onStats, onRefresh);
+                                               onUpdate, onRemove, onSort, onStats, 
+                                               onSaveCSV, onLoadCSV, onRefresh);
         mainLayout.setRight(rightSection);
 
         // Bottom: Status bar
@@ -121,7 +126,7 @@ public class StudentGUIView {
     private VBox createRightSection(Stage primaryStage,
                                    Runnable onAdd, Runnable onSearchId, Runnable onSearchName,
                                    Runnable onUpdate, Runnable onRemove, Runnable onSort,
-                                   Runnable onStats, Runnable onRefresh) {
+                                   Runnable onStats, Runnable onSaveCSV, Runnable onLoadCSV, Runnable onRefresh) {
         VBox rightSection = new VBox(10);
         rightSection.setPadding(new Insets(10));
         rightSection.setPrefWidth(200);
@@ -136,8 +141,8 @@ public class StudentGUIView {
         Button updateBtn = createStyledButton("✏️ Update Student");
         Button removeBtn = createStyledButton("🗑️ Remove Student");
         Button sortBtn = createStyledButton("📊 Sort Students");
-        Button statsBtn = createStyledButton("📈 Statistics");
-        Button refreshBtn = createStyledButton("🔄 Refresh Table");
+        Button statsBtn = createStyledButton("📈 Statistics");        Button saveCSVBtn = createStyledButton("💾 Save to CSV");
+        Button loadCSVBtn = createStyledButton("📂 Load from CSV");        Button refreshBtn = createStyledButton("🔄 Refresh Table");
 
         // Button actions
         addBtn.setOnAction(e -> onAdd.run());
@@ -147,6 +152,8 @@ public class StudentGUIView {
         removeBtn.setOnAction(e -> onRemove.run());
         sortBtn.setOnAction(e -> onSort.run());
         statsBtn.setOnAction(e -> onStats.run());
+        saveCSVBtn.setOnAction(e -> onSaveCSV.run());
+        loadCSVBtn.setOnAction(e -> onLoadCSV.run());
         refreshBtn.setOnAction(e -> onRefresh.run());
 
         rightSection.getChildren().addAll(
@@ -160,6 +167,9 @@ public class StudentGUIView {
             new Separator(),
             sortBtn,
             statsBtn,
+            new Separator(),
+            saveCSVBtn,
+            loadCSVBtn,
             new Separator(),
             refreshBtn
         );
@@ -431,5 +441,20 @@ public class StudentGUIView {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Shows a confirmation dialog and returns user's choice
+     * @return true if user confirmed (OK), false otherwise (Cancel)
+     */
+    public boolean showConfirmation(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        
+        return alert.showAndWait()
+                   .filter(response -> response == ButtonType.OK)
+                   .isPresent();
     }
 }

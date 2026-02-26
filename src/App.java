@@ -1,5 +1,9 @@
 import java.util.Scanner;
 
+import manager.StudentManager;
+import view.StudentView;
+import controller.StudentController;
+
 /**
  * Student Records Manager - Main Application (MVC Pattern)
  * 

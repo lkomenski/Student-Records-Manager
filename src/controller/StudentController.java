@@ -1,6 +1,12 @@
+package controller;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Student;
+import manager.StudentManager;
+import view.StudentView;
+import util.InputValidator;
 import exceptions.StudentException;
 
 /**
@@ -28,7 +34,7 @@ public class StudentController {
      */
     public void run() {
         view.printWelcome();
-        addSampleData();
+        promptForSampleData();
 
         boolean running = true;
         while (running) {
@@ -39,14 +45,44 @@ public class StudentController {
     }
 
     /**
-     * Adds sample student data for testing purposes
+     * Prompts user if they want to load sample data on startup.
+     * This provides better UX by giving users control over initial data.
      */
-    private void addSampleData() {
+    private void promptForSampleData() {
+        String response = view.promptForString("Load sample data for testing? (yes/no): ");
+        
+        if (response.equalsIgnoreCase("yes") || response.equalsIgnoreCase("y")) {
+            loadSampleData();
+        } else {
+            view.printMessage("Starting with empty student list. Use menu option 10 to load data from CSV.\n");
+        }
+    }
+
+    /**
+     * Loads sample student data for testing purposes.
+     * Attempts to load from sample_data.csv file; falls back to hardcoded data if file not found.
+     * This demonstrates the CSV loading functionality in action.
+     */
+    private void loadSampleData() {
+        // Try to load from CSV file first (demonstrates CSV functionality)
+        try {
+            int count = manager.loadFromCSV("sample_data.csv");
+            view.printMessage("Sample data loaded from CSV: " + count + " students added.\n");
+            return; // Successfully loaded from CSV
+        } catch (java.io.FileNotFoundException e) {
+            // File not found - fall back to hardcoded data
+            view.printMessage("sample_data.csv not found. Loading default sample data...");
+        } catch (java.io.IOException e) {
+            // Other I/O error - fall back to hardcoded data
+            view.printMessage("Error reading sample_data.csv. Loading default sample data...");
+        }
+        
+        // Fallback: Add hardcoded sample data if CSV loading failed
         try {
             manager.addStudent(new Student("S001", "John", "Doe", 3.5));
             manager.addStudent(new Student("S002", "Jane", "Smith", 3.8));
             manager.addStudent(new Student("S003", "Alice", "Johnson", 3.2));
-            view.printMessage("Sample data loaded: 3 students added.\n");
+            view.printMessage("Default sample data loaded: 3 students added.\n");
         } catch (StudentException e) {
             view.printError("Error loading sample data: " + e.getMessage());
         }
@@ -87,6 +123,12 @@ public class StudentController {
                 displayStatistics();
                 break;
             case 9:
+                saveToFile();
+                break;
+            case 10:
+                loadFromFile();
+                break;
+            case 11:
                 return false; // Exit
             default:
                 view.printError("Invalid option. Please try again.");
@@ -104,7 +146,7 @@ public class StudentController {
         
         String firstName = view.promptForNonEmptyString("Enter First Name: ", "First name");
         String lastName = view.promptForNonEmptyString("Enter Last Name: ", "Last name");
-        double gpa = view.promptForDouble("Enter GPA (0.0 - 4.0): ", 0.0, 4.0);
+        double gpa = view.promptForDouble("Enter GPA (0.0 - 4.0): ", InputValidator.MIN_GPA, InputValidator.MAX_GPA);
         
         try {
             Student newStudent = manager.addStudentAutoId(firstName, lastName, gpa);
@@ -145,7 +187,7 @@ public class StudentController {
         view.printSectionHeader("SEARCH BY LAST NAME (RECURSIVE)");
         String lastName = view.promptForString("Enter Last Name: ");
         
-        if (lastName.isEmpty()) {
+        if (!InputValidator.isNonEmpty(lastName)) {
             view.printError("Last name cannot be empty!");
             return;
         }
@@ -174,7 +216,8 @@ public class StudentController {
         
         String firstName = view.promptForString("New First Name [" + student.getFirstName() + "]: ");
         String lastName = view.promptForString("New Last Name [" + student.getLastName() + "]: ");
-        Double gpa = view.promptForOptionalDouble("New GPA [" + student.getGpa() + "]: ", 0.0, 4.0);
+        Double gpa = view.promptForOptionalDouble("New GPA [" + student.getGpa() + "]: ", 
+                                                  InputValidator.MIN_GPA, InputValidator.MAX_GPA);
         
         try {
             manager.updateStudent(studentId, firstName, lastName, gpa);
@@ -266,5 +309,72 @@ public class StudentController {
         int above25 = manager.countStudentsAboveGPA(2.5);
         
         view.printStatistics(totalStudents, averageGPA, highest, above35, above30, above25);
+    }
+
+    /**
+     * Handles saving student data to CSV file
+     */
+    private void saveToFile() {
+        view.printSectionHeader("SAVE TO CSV FILE");
+        
+        // Prompt for filename
+        String filename = view.promptForFilename("Enter filename to save (e.g., students.csv): ");
+        
+        if (!InputValidator.isNonEmpty(filename)) {
+            view.printError("Save cancelled.");
+            return;
+        }
+        
+        // Add .csv extension if not present
+        if (!filename.toLowerCase().endsWith(".csv")) {
+            filename += ".csv";
+        }
+        
+        try {
+            manager.saveToCSV(filename);
+            view.printSuccess("Successfully saved " + manager.getStudentCount() + " students to " + filename);
+        } catch (java.io.IOException e) {
+            view.printError("Failed to save file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles loading student data from CSV file
+     */
+    private void loadFromFile() {
+        view.printSectionHeader("LOAD FROM CSV FILE");
+        
+        // Warn about overwriting current data
+        if (manager.getStudentCount() > 0) {
+            view.printMessage("Warning: Loading will REPLACE all current students!");
+            String confirm = view.promptForString("Type 'yes' to continue: ");
+            
+            if (!confirm.equalsIgnoreCase("yes")) {
+                view.printMessage("Load cancelled.");
+                return;
+            }
+        }
+        
+        // Prompt for filename
+        String filename = view.promptForFilename("Enter filename to load (e.g., students.csv): ");
+        
+        if (!InputValidator.isNonEmpty(filename)) {
+            view.printError("Load cancelled.");
+            return;
+        }
+        
+        // Add .csv extension if not present
+        if (!filename.toLowerCase().endsWith(".csv")) {
+            filename += ".csv";
+        }
+        
+        try {
+            int count = manager.loadFromCSV(filename);
+            view.printSuccess("Successfully loaded " + count + " students from " + filename);
+        } catch (java.io.FileNotFoundException e) {
+            view.printError("File not found: " + filename);
+        } catch (java.io.IOException e) {
+            view.printError("Failed to load file: " + e.getMessage());
+        }
     }
 }

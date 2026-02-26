@@ -1,6 +1,12 @@
+package manager;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.io.IOException;
 
+import model.Student;
+import service.StudentDataService;
+import util.InputValidator;
 import exceptions.StudentException;
 import exceptions.DuplicateStudentIdException;
 import exceptions.InvalidGpaException;
@@ -12,17 +18,23 @@ import exceptions.StudentNotFoundException;
  * and provides additional features like searching, sorting, and statistics.
  * Demonstrates use of ArrayList data structure and recursive algorithms.
  * 
+ * Uses StudentDataService for CSV file persistence operations,
+ * following Single Responsibility Principle.
+ * 
  * @author Leena Komenski
  */
 
 public class StudentManager {
     private ArrayList<Student> students;
+    private StudentDataService dataService;
 
     /**
      * Constructor initializes the ArrayList to store students
+     * and the data service for CSV operations
      */
     public StudentManager() {
         this.students = new ArrayList<>();
+        this.dataService = new StudentDataService();
     }
 
     /**
@@ -177,14 +189,14 @@ public class StudentManager {
             throw new StudentNotFoundException(studentId);
         }
 
-        if (firstName != null && !firstName.trim().isEmpty()) {
+        if (InputValidator.isNonEmpty(firstName)) {
             student.setFirstName(firstName);
         }
-        if (lastName != null && !lastName.trim().isEmpty()) {
+        if (InputValidator.isNonEmpty(lastName)) {
             student.setLastName(lastName);
         }
         if (gpa != null) {
-            if (gpa < 0.0 || gpa > 4.0) {
+            if (!InputValidator.isValidGPA(gpa)) {
                 throw new InvalidGpaException(gpa);
             }
             student.setGpa(gpa);
@@ -303,5 +315,55 @@ public class StudentManager {
      */
     public int getStudentCount() {
         return students.size();
+    }
+
+    /**
+     * Clears all students from the system.
+     * Used by data service during CSV load operations.
+     */
+    public void clearAllStudents() {
+        students.clear();
+    }
+
+    // ==================== FILE PERSISTENCE (CSV) ====================
+    // Delegated to StudentDataService for separation of concerns
+
+    /**
+     * Saves all student records to a CSV file.
+     * Delegates to StudentDataService for file operations.
+     * 
+     * @param filename The name of the file to save to
+     * @throws IOException if file writing fails
+     */
+    public void saveToCSV(String filename) throws IOException {
+        dataService.saveToCSV(this, filename);
+    }
+
+    /**
+     * Loads student records from a CSV file.
+     * Delegates to StudentDataService for file operations.
+     * 
+     * Note: This method CLEARS existing students and replaces with loaded data.
+     * 
+     * @param filename The name of the file to load from
+     * @return Number of students successfully loaded
+     * @throws IOException if file reading fails
+     */
+    public int loadFromCSV(String filename) throws IOException {
+        return dataService.loadFromCSV(this, filename);
+    }
+
+    /**
+     * Appends student records from a CSV file to existing records.
+     * Delegates to StudentDataService for file operations.
+     * 
+     * Unlike loadFromCSV, this does NOT clear existing students.
+     * 
+     * @param filename The name of the file to import from
+     * @return Number of students successfully imported
+     * @throws IOException if file reading fails
+     */
+    public int importFromCSV(String filename) throws IOException {
+        return dataService.importFromCSV(this, filename);
     }
 }

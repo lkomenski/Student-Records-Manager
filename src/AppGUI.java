@@ -1,7 +1,15 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import java.util.Optional;
+
+import manager.StudentManager;
+import view.StudentGUIView;
+import controller.StudentGUIController;
 
 /**
  * Student Records Manager - JavaFX GUI Application (MVC Pattern)
@@ -33,8 +41,17 @@ public class AppGUI extends Application {
         StudentGUIView view = new StudentGUIView();      // View
         StudentGUIController controller = new StudentGUIController(manager, view, primaryStage);  // Controller
 
-        // Add sample data
-        controller.addSampleData();
+        // Prompt user for sample data
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Load Sample Data");
+        alert.setHeaderText("Load sample data for testing?");
+        alert.setContentText("This will load student records from sample_data.csv.\n" +
+                           "Choose 'Cancel' to start with an empty list.");
+        
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            controller.loadSampleData();
+        }
 
         // Create main layout with event handlers
         BorderPane mainLayout = view.createMainLayout(
@@ -46,6 +63,8 @@ public class AppGUI extends Application {
             () -> controller.handleRemoveStudent(),
             () -> controller.handleSortStudents(),
             () -> controller.handleDisplayStatistics(),
+            () -> controller.handleSaveToCSV(),
+            () -> controller.handleLoadFromCSV(),
             () -> controller.refreshTable()
         );
 
