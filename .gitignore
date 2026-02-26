@@ -19,8 +19,16 @@
 *.tar.gz
 *.rar
 
+# Exception: Keep JUnit library for testing
+!lib/junit-platform-console-standalone-*.jar
+
 # Virtual machine crash logs
 hs_err_pid*
+
+# Personal learning materials (not for submission)
+HOW_TO_TEST.md
+run-tests.bat
+run-tests.sh
 
 # Eclipse
 .classpath

@@ -49,6 +49,13 @@ Both console and GUI versions follow **MVC (Model-View-Controller)** pattern:
 - Sorting & searching algorithms
 - Modular package structure
 - Immutability patterns
+- Test-Driven Development (TDD)
+
+---
+
+## Testing
+
+Comprehensive JUnit 5 test suite with **12 unit tests** covering all CRUD operations, exception handling, and edge cases. Tests validate `StudentManager` business logic independently from UI, following TDD principles (Red → Green → Refactor). See `TESTING.md` for details.
 
 ---
 
@@ -80,6 +87,14 @@ See `JAVAFX_SETUP.md` for detailed setup instructions.
 
 ---
 
+## Additional Documentation
+
+**JavaFX GUI** (`JAVAFX_SETUP.md`): Complete graphical user interface implementation with the same MVC architecture. Includes setup instructions, configuration details, and platform-specific guidance.
+
+**Testing Suite** (`TESTING.md`): Comprehensive JUnit 5 unit tests following TDD principles. Includes test execution commands, test architecture explanation, and coverage details for all 12 test cases.
+
+---
+
 ## Project Structure
 
 ```
@@ -100,6 +115,12 @@ src/
 ├── AppGUI.java                      # GUI entry point
 ├── StudentGUIView.java             # GUI view layer (JavaFX)
 └── StudentGUIController.java       # GUI controller layer
+
+test/
+└── StudentManagerTest.java         # JUnit 5 test suite (12 tests)
+
+lib/
+└── junit-platform-console-*.jar    # JUnit 5 testing framework
 ```
 
 ---
@@ -114,6 +135,7 @@ src/
 - 8+ functional features
 - Custom exception hierarchy
 - File organization and package structure
+- **JUnit test suite with 8+ test cases (TDD)**
 
 **Advanced Features:**
 - Complete MVC architecture (both versions)
@@ -121,6 +143,7 @@ src/
 - Modular exception package
 - Immutability and defensive programming
 - Professional software engineering practices
+- Comprehensive unit testing with 12 test cases
 
 ---
 
