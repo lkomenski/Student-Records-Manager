@@ -55,7 +55,7 @@ Both console and GUI versions follow **MVC (Model-View-Controller)** pattern:
 
 ## Testing
 
-Comprehensive JUnit 5 test suite with **12 unit tests** covering all CRUD operations, exception handling, and edge cases. Tests validate `StudentManager` business logic independently from UI, following TDD principles (Red → Green → Refactor). See `TESTING.md` for details.
+Comprehensive JUnit 5 test suite with **12 automated unit tests** covering all CRUD operations, exception handling, and edge cases. Tests validate `StudentManager` business logic independently from UI, following TDD principles (Red → Green → Refactor). Additionally includes documented manual test for UI-layer input validation. See [TESTING.md](TESTING.md) for details.
 
 ---
 
@@ -84,6 +84,29 @@ java --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls -cp bin 
 ```
 
 See `JAVAFX_SETUP.md` for detailed setup instructions.
+
+---
+
+## Where Recursion is Used
+
+This project includes **three recursive methods** that demonstrate different applications of recursion:
+
+### 1. Recursive Search (`searchByLastNameRecursive`)
+**Location**: [StudentManager.java](src/StudentManager.java#L132-L155)  
+**Purpose**: Searches for students by last name by recursively traversing the ArrayList.  
+**Why Recursion**: Demonstrates how recursion can replace iterative loops for list traversal. The base case occurs when reaching the end of the list, and the recursive case checks each student and continues to the next index.
+
+### 2. Recursive Counting (`countStudentsAboveGPARecursive`)
+**Location**: [StudentManager.java](src/StudentManager.java#L269-L298)  
+**Purpose**: Counts students with GPA above a threshold using recursive computation.  
+**Why Recursion**: Shows how recursion can be used for accumulation and counting. Each recursive call adds to the count and returns the sum of current and remaining elements.
+
+### 3. Recursive Input Validation (`promptForMenuChoice`)
+**Location**: [StudentView.java](src/StudentView.java#L137-L152)  
+**Purpose**: Validates menu input by recursively re-prompting until valid input is received.  
+**Why Recursion**: Demonstrates recursion for user input validation. Instead of using a while loop, the method calls itself when input is invalid, naturally continuing until a valid choice is entered.
+
+All recursive methods include clear base cases to prevent infinite recursion and comments explaining their recursive logic.
 
 ---
 

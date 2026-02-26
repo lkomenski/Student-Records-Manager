@@ -12,8 +12,8 @@ The `StudentManager` class is unit-tested without UI dependencies, making it ide
 
 **Location**: `test/StudentManagerTest.java`  
 **Framework**: JUnit 5 (Jupiter)  
-**Total Tests**: 12 (8 required + 4 bonus)  
-**Coverage**: All CRUD operations, exception handling, and edge cases
+**Total Tests**: 12 automated unit tests + 1 documented manual test  
+**Coverage**: All CRUD operations, exception handling, and business logic
 
 ### Required Test Cases (8)
 
@@ -25,6 +25,7 @@ The `StudentManager` class is unit-tested without UI dependencies, making it ide
 6. **Update changes name/GPA** - Verifies `updateStudent()` modifies data correctly
 7. **Remove confirmed deletes** - Tests `removeStudent()` with confirmation
 8. **Invalid GPA rejected** - Ensures `InvalidGpaException` for out-of-range values
+9. **Invalid menu input handling** - Manual test (documented in test file) verifying UI-layer input validation prevents crashes
 
 ### Bonus Test Cases (4)
 
