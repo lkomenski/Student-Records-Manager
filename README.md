@@ -89,9 +89,9 @@ See `JAVAFX_SETUP.md` for detailed setup instructions.
 
 ## Additional Documentation
 
-**JavaFX GUI** (`JAVAFX_SETUP.md`): Complete graphical user interface implementation with the same MVC architecture. Includes setup instructions, configuration details, and platform-specific guidance.
+**JavaFX GUI** ([JAVAFX_SETUP.md](JAVAFX_SETUP.md)): Complete graphical user interface implementation with the same MVC architecture. Includes setup instructions, configuration details, and platform-specific guidance.
 
-**Testing Suite** (`TESTING.md`): Comprehensive JUnit 5 unit tests following TDD principles. Includes test execution commands, test architecture explanation, and coverage details for all 12 test cases.
+**Testing Suite** ([TESTING.md](TESTING.md)): Comprehensive JUnit 5 unit tests following TDD principles. Includes test execution commands, test architecture explanation, and coverage details for all 12 test cases.
 
 ---
 
