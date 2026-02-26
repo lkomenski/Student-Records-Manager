@@ -1,143 +1,127 @@
 # Student Records Manager
 
-A comprehensive Java application for managing student records, available in both **Console** and **JavaFX GUI** versions.  
-This project demonstrates Object-Oriented Programming, `ArrayList` usage, recursion, input validation, sorting, and basic statistical calculations.
-
----
-
-## Two Versions Available
-
-1. **Console Version** (`App.java`) - Text-based menu interface
-2. **JavaFX GUI Version** (`AppGUI.java`) - Modern graphical interface with tables, buttons, and dialogs
-
-Both versions share the same core logic and preserve all functionality, comments, and recursive algorithms.
+A comprehensive Java application for managing student records, available in both **Console** and **JavaFX GUI** versions. Demonstrates Object-Oriented Programming, MVC architecture, ArrayList usage, recursion, input validation, and sorting algorithms.
 
 ---
 
 ## Features
 
-- Add a student (duplicate ID prevention)
+- Add students with auto-generated IDs (duplicate prevention)
 - List all students
-- Search by ID
-- Search by last name (**recursive search**)
+- Search by ID or last name (recursive)
 - Update student information
-- Remove a student
+- Remove students (with confirmation)
 - Sort by ID, last name, or GPA
-- View statistics (average GPA, highest GPA, recursive GPA count)
+- View statistics (average GPA, highest GPA, recursive GPA distribution)
 
 ---
 
-## Concepts Demonstrated
+## Architecture
 
-- **OOP** – Separate `Student`, `StudentManager`, and `App` classes  
-- **ArrayList** – Dynamic student storage  
-- **Recursion** –  
-  - Recursive last name search  
-  - Recursive GPA counting  
-  - Recursive menu validation  
-- **Input Validation** – Prevents invalid GPA, duplicate IDs, and invalid menu input  
-- **Sorting & Searching Algorithms**
+Both console and GUI versions follow **MVC (Model-View-Controller)** pattern:
+
+**Model** (shared): `StudentManager`, `Student`, `exceptions/`
+- Business logic, CRUD operations, recursion, validation
+- Returns unmodifiable lists for encapsulation
+- Immutable student IDs
+
+**Console Version**:
+- **View**: `StudentView` (console I/O, prompts, formatting)
+- **Controller**: `StudentController` (menu flow, coordinates Model/View)
+- **Entry**: `App.java`
+
+**GUI Version**:
+- **View**: `StudentGUIView` (JavaFX components, dialogs, layouts)
+- **Controller**: `StudentGUIController` (event handling, validation)
+- **Entry**: `AppGUI.java`
+
+**Design Benefits**: Separation of concerns, low coupling, code reusability, defensive programming
+
+---
+
+## Key Concepts Demonstrated
+
+- Object-Oriented Programming (encapsulation, inheritance)
+- MVC Architecture
+- ArrayList with protected access
+- Recursion (search, counting, validation)
+- Input validation & exception handling
+- Sorting & searching algorithms
+- Modular package structure
+- Immutability patterns
 
 ---
 
 ## How to Run
 
-### Console Version (App.java)
+### Console Version
 
-#### Option 1 – Command Line
 ```bash
-cd src
-javac *.java
-java App
+# Compile
+javac -d bin src/exceptions/*.java src/Student.java src/StudentManager.java src/StudentView.java src/StudentController.java src/App.java
+
+# Run
+java -cp bin App
 ```
 
-#### Option 2 – VS Code
-Open `App.java` and press **Run** (F5).
+### JavaFX GUI Version
 
----
+**Prerequisites**: JavaFX SDK ([download](https://gluonhq.com/products/javafx/) or use bundled JDK)
 
-### JavaFX GUI Version (AppGUI.java)
-
-#### Prerequisites
-- JavaFX SDK installed (bundled with Java 11+ or download separately)
-
-#### Option 1 – Command Line
 ```bash
-cd src
-javac --module-path "path/to/javafx-sdk/lib" --add-modules javafx.controls *.java
-java --module-path "path/to/javafx-sdk/lib" --add-modules javafx.controls AppGUI
+# Compile (adjust JavaFX path)
+javac --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls -d bin src/exceptions/*.java src/Student.java src/StudentManager.java src/StudentGUIView.java src/StudentGUIController.java src/AppGUI.java
+
+# Run
+java --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls -cp bin AppGUI
 ```
 
-#### Option 2 – VS Code
-1. Open `AppGUI.java`
-2. Configure JavaFX in your launch.json (add VM arguments for module path)
-3. Press **Run** (F5)
-
-#### Option 3 – Using Maven/Gradle
-Create a build file with JavaFX dependencies and run:
-```bash
-mvn javafx:run  # or
-gradle run
-```
-
----
-
-## Menu Options (Console Version)
-
-```
-1. Add a new student
-2. List all students
-3. Search student by ID
-4. Search students by Last Name (Recursive)
-5. Update student information
-6. Remove a student
-7. Sort students
-8. View statistics
-9. Quit
-```
-
----
-
-## Test Cases
-
-1. Add valid student → student appears in list  
-2. Add duplicate ID → error message  
-3. Enter invalid GPA → re-prompt  
-4. Search existing ID → correct record returned  
-5. Search by last name → recursive results displayed  
-6. Update GPA → changes reflected  
-7. Sort by GPA → correctly ordered list  
-8. View statistics → accurate average and recursive GPA count  
-9. Remove student → student deleted  
-10. Enter invalid menu input → recursive re-prompt  
+See `JAVAFX_SETUP.md` for detailed setup instructions.
 
 ---
 
 ## Project Structure
 
-- `Student.java` – Student model (encapsulation, getters/setters, Comparable interface, static Comparators)
-- `StudentManager.java` – CRUD operations, sorting, recursion, statistics  
-- `StudentException.java` – Custom exception classes for error handling
-- `App.java` – **Console version** with menu system and text-based user interaction
-- `AppGUI.java` – **JavaFX GUI version** with tables, buttons, dialogs, and modern interface
+```
+src/
+├── exceptions/                      # Modular exception hierarchy
+│   ├── StudentException.java
+│   ├── DuplicateStudentIdException.java
+│   ├── InvalidGpaException.java
+│   └── StudentNotFoundException.java
+│
+├── Student.java                     # Student model (immutable ID)
+├── StudentManager.java              # Model: CRUD, recursion, statistics
+│
+├── App.java                         # Console entry point
+├── StudentView.java                 # Console view layer
+├── StudentController.java           # Console controller layer
+│
+├── AppGUI.java                      # GUI entry point
+├── StudentGUIView.java             # GUI view layer (JavaFX)
+└── StudentGUIController.java       # GUI controller layer
+```
 
 ---
 
-## GUI Features
+## Requirements Satisfied
 
-The JavaFX version (`AppGUI.java`) includes:
-- **TableView** displaying all students with sortable columns
-- **Add Student Dialog** with auto-generated IDs and validation
-- **Search Dialogs** for ID and last name (uses recursive search)
-- **Update Dialog** pre-filled with current student data
-- **Remove Confirmation** dialog for safe deletion
-- **Sort Options** dialog with multiple criteria
-- **Statistics Window** showing recursive GPA counts
-- **Status Bar** for feedback messages
-- **Error Handling** with user-friendly alert dialogs
+**Core Requirements:**
+- ArrayList data structure with protected access
+- Multiple recursive methods (search, counting, validation)
+- Comprehensive input validation
+- Sorting (3 criteria) and searching (2 methods)
+- 8+ functional features
+- Custom exception hierarchy
+- File organization and package structure
 
-All recursive methods, validation logic, and functionality from the console version are preserved in the GUI.
+**Advanced Features:**
+- Complete MVC architecture (both versions)
+- Two separate interfaces (Console + JavaFX GUI)
+- Modular exception package
+- Immutability and defensive programming
+- Professional software engineering practices
 
 ---
 
-This project satisfies all assignment requirements, including use of ArrayList, recursion, input validation, sorting, searching, and at least five functional features. **Bonus: Complete JavaFX GUI implementation.**
+This project demonstrates professional software development with clean architecture, proper separation of concerns, and comprehensive feature implementation across two user interfaces.

@@ -1,11 +1,18 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+import exceptions.StudentException;
+import exceptions.DuplicateStudentIdException;
+import exceptions.InvalidGpaException;
+import exceptions.StudentNotFoundException;
+
 /**
  * StudentManager class manages a collection of Student objects.
  * This class handles all CRUD operations (Create, Read, Update, Delete)
  * and provides additional features like searching, sorting, and statistics.
  * Demonstrates use of ArrayList data structure and recursive algorithms.
+ * 
+ * @author Leena Komenski
  */
 
 public class StudentManager {
@@ -80,10 +87,11 @@ public class StudentManager {
 
     /**
      * Lists all students in the system
-     * @return ArrayList of all students
+     * Returns an unmodifiable view to protect internal list from external modification
+     * @return Unmodifiable List of all students
      */
-    public ArrayList<Student> getAllStudents() {
-        return students;
+    public java.util.List<Student> getAllStudents() {
+        return Collections.unmodifiableList(students);
     }
 
     /**

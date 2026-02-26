@@ -2,6 +2,8 @@
  * Student class represents a student record with ID, name, and GPA.
  * This class demonstrates Object-Oriented Programming principles with
  * encapsulation (private fields) and public accessor methods.
+ * 
+ * @author Leena Komenski
  */
 import java.util.Comparator;
 
@@ -43,10 +45,8 @@ public class Student implements Comparable<Student> {
     }
 
     // Setters
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
-
+    // Note: setStudentId() removed to maintain data integrity - student IDs are immutable after construction
+    
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }

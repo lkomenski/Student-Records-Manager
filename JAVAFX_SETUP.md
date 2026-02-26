@@ -1,107 +1,59 @@
 # JavaFX Setup Guide
 
 ## What You Have
-✅ **AppGUI.java** - Complete JavaFX GUI with all features from console version  
-✅ All business logic preserved (Student, StudentManager, exceptions)  
-✅ All comments and recursive methods intact  
+- **AppGUI.java** - Complete JavaFX GUI with MVC architecture
+- **StudentGUIView.java** - JavaFX UI components (View layer)
+- **StudentGUIController.java** - Event handlers (Controller layer)
+- All business logic preserved (Student, StudentManager, exceptions package)
+- All comments and recursive methods intact  
 
 ## What You Need
-❌ JavaFX SDK (not installed)
+JavaFX SDK - VS Code Extension for Java handles this automatically when you click Run
 
 ---
 
 ## Setup Options
 
-### Option 1: Use Java 11+ with Bundled JavaFX (Easiest)
+### Option 1: VS Code Run Button (Easiest - Recommended)
+
+1. Open `AppGUI.java` in VS Code
+2. Click the "Run" button above the `public static void main` method
+3. VS Code automatically:
+   - Downloads JavaFX dependencies if needed
+   - Compiles to `bin/` directory (keeps `src/` clean)
+   - Runs the application
+
+**Advantages:**
+- No manual JavaFX setup required
+- Automatically uses `-d bin` (proper compilation)
+- Simplifies dependency management
+
+---
+
+### Option 2: Use Java with Bundled JavaFX
 Some JDK distributions include JavaFX:
 - **Azul Zulu FX** - https://www.azul.com/downloads/?package=jdk-fx
 - **Liberica Full JDK** - https://bell-sw.com/pages/downloads/
 
-Download and install one of these, then:
+Download and install one of these, then compile from project root:
 ```bash
-cd src
-javac AppGUI.java Student.java StudentManager.java StudentException.java
-java AppGUI
+javac -d bin src/AppGUI.java src/Student.java src/StudentManager.java src/StudentGUIView.java src/StudentGUIController.java src/exceptions/*.java
+java -cp bin AppGUI
 ```
 
 ---
 
-### Option 2: Download JavaFX SDK Separately
+### Option 3: Download JavaFX SDK Separately
 1. Download JavaFX SDK: https://gluonhq.com/products/javafx/
 2. Extract to a folder (e.g., `C:\javafx-sdk-21`)
-3. Run with module path:
+3. Compile from project root with module path:
 
 ```bash
-cd src
-javac --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls *.java
-java --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls AppGUI
+javac -d bin --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls src/AppGUI.java src/Student.java src/StudentManager.java src/StudentGUIView.java src/StudentGUIController.java src/exceptions/*.java
+java -cp bin --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls AppGUI
 ```
 
----
-
-### Option 3: Use Maven (Recommended for Production)
-Create `pom.xml`:
-```xml
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.student</groupId>
-  <artifactId>records-manager</artifactId>
-  <version>1.0</version>
-  
-  <properties>
-    <javafx.version>21</javafx.version>
-  </properties>
-  
-  <dependencies>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>${javafx.version}</version>
-    </dependency>
-  </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-maven-plugin</artifactId>
-        <version>0.0.8</version>
-        <configuration>
-          <mainClass>AppGUI</mainClass>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-</project>
-```
-
-Then run:
-```bash
-mvn clean javafx:run
-```
-
----
-
-### Option 4: VS Code Configuration (Already Done!)
-A `.vscode/launch.json` file has been created with two configurations:
-1. **Launch Console App** - Runs App.java (no JavaFX needed)
-2. **Launch JavaFX GUI** - Runs AppGUI.java (requires JavaFX)
-
-**To customize the JavaFX path:**
-1. Open `.vscode/launch.json`
-2. Find the line with `"vmArgs"`
-3. Replace `C:\\javafx-sdk-21\\lib` with your actual JavaFX SDK path
-4. Save and press **F5** to run
-
-**To select which version to run:**
-- Press **F5** or click the Run icon
-- Click the dropdown next to the play button
-- Choose "Launch Console App" or "Launch JavaFX GUI"
-
-Example paths:
-- Windows: `C:\\javafx-sdk-21\\lib`
-- Mac: `/Library/Java/javafx-sdk-21/lib`
-- Linux: `/opt/javafx-sdk-21/lib`
+**Important:** Always use `-d bin` flag to compile to the bin/ directory, not src/
 
 ---
 
@@ -116,23 +68,39 @@ Once JavaFX is set up, you should see:
 
 ## Features in GUI Version
 All console features are preserved:
-- ✅ Add Student (auto-generated ID)
-- ✅ Search by ID
-- ✅ Search by Last Name (RECURSIVE)
-- ✅ Update Student
-- ✅ Remove Student (with confirmation)
-- ✅ Sort (ID, Name, GPA)
-- ✅ Statistics (with RECURSIVE GPA counting)
-- ✅ Full input validation
-- ✅ Error handling with dialogs
+- Add Student (auto-generated ID)
+- Search by ID
+- Search by Last Name (RECURSIVE)
+- Update Student
+- Remove Student (with confirmation)
+- Sort (ID, Name, GPA)
+- Statistics (with RECURSIVE GPA counting)
+- Full input validation
+- Error handling with dialogs
 
 ---
 
-## If You Get Stuck
-The console version (`App.java`) still works perfectly without JavaFX!
+## Alternative: Console Version
+The console version (`App.java`) provides the same functionality without requiring JavaFX.
+
+From project root directory:
 ```bash
-javac App.java Student.java StudentManager.java StudentException.java
-java App
+javac -d bin src/App.java src/Student.java src/StudentManager.java src/StudentView.java src/StudentController.java src/exceptions/*.java
+java -cp bin App
 ```
 
-Both versions fulfill all course requirements. The GUI is a bonus feature! 🎉
+---
+
+## Avoiding .class Files in src/
+
+**Always compile from the project root with `-d bin`:**
+```bash
+# Good - compiles to bin/
+javac -d bin src/App.java src/Student.java ...
+
+# Bad - creates .class files in src/
+cd src
+javac App.java Student.java ...
+```
+
+The `-d bin` flag tells javac to put compiled files in bin/ and automatically creates subdirectories like bin/exceptions/.
