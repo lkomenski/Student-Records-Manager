@@ -77,6 +77,15 @@ All console features are preserved:
 - Statistics (with RECURSIVE GPA counting)
 - Full input validation
 - Error handling with dialogs
+- Add Student (auto-generated ID)
+- Search by ID
+- Search by Last Name (RECURSIVE)
+- Update Student
+- Remove Student (with confirmation)
+- Sort (ID, Name, GPA)
+- Statistics (with RECURSIVE GPA counting)
+- Full input validation
+- Error handling with dialogs
 
 ---
 
