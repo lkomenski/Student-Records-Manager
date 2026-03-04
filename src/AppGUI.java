@@ -41,19 +41,8 @@ public class AppGUI extends Application {
         StudentGUIView view = new StudentGUIView();      // View
         StudentGUIController controller = new StudentGUIController(manager, view, primaryStage);  // Controller
 
-        // Prompt user for sample data
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Load Sample Data");
-        alert.setHeaderText("Load sample data for testing?");
-        alert.setContentText("This will load student records from sample_data.csv.\n" +
-                           "Choose 'Cancel' to start with an empty list.");
-        
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            controller.loadSampleData();
-        }
-
         // Create main layout with event handlers
+        // Must happen BEFORE any refreshTable() calls so observableStudents is initialized
         BorderPane mainLayout = view.createMainLayout(
             primaryStage,
             () -> controller.handleAddStudent(),
@@ -73,8 +62,20 @@ public class AppGUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Initial table refresh
-        controller.refreshTable();
+        // Prompt user for sample data (after layout is initialized)
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Load Sample Data");
+        alert.setHeaderText("Load sample data for testing?");
+        alert.setContentText("This will load student records from sample_data.csv.\n" +
+                           "Choose 'Cancel' to start with an empty list.");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            controller.loadSampleData();
+        } else {
+            // Initial table refresh for empty state
+            controller.refreshTable();
+        }
     }
 
     /**
