@@ -96,11 +96,11 @@ java -cp bin App
 **Always compile from the project root with `-d bin`:**
 ```bash
 # Good - compiles to bin/
-javac -d bin src/App.java src/Student.java ...
+javac -d bin src/exceptions/*.java src/model/*.java src/util/*.java src/service/*.java src/manager/*.java src/view/StudentView.java src/controller/StudentController.java src/App.java
 
 # Bad - creates .class files in src/
 cd src
-javac App.java Student.java ...
+javac App.java StudentManager.java ...
 ```
 
 The `-d bin` flag tells javac to put compiled files in bin/ and automatically creates subdirectories like bin/exceptions/.
