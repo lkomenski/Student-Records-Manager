@@ -37,7 +37,7 @@ Some JDK distributions include JavaFX:
 
 Download and install one of these, then compile from project root:
 ```bash
-javac -d bin src/AppGUI.java src/Student.java src/StudentManager.java src/StudentGUIView.java src/StudentGUIController.java src/exceptions/*.java
+javac -d bin src/exceptions/*.java src/model/*.java src/util/*.java src/service/*.java src/manager/*.java src/view/*.java src/controller/*.java src/AppGUI.java
 java -cp bin AppGUI
 ```
 
@@ -49,8 +49,8 @@ java -cp bin AppGUI
 3. Compile from project root with module path:
 
 ```bash
-javac -d bin --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls src/AppGUI.java src/Student.java src/StudentManager.java src/StudentGUIView.java src/StudentGUIController.java src/exceptions/*.java
-java -cp bin --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls AppGUI
+javac --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls -d bin src/exceptions/*.java src/model/*.java src/util/*.java src/service/*.java src/manager/*.java src/view/*.java src/controller/*.java src/AppGUI.java
+java --module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls -cp bin AppGUI
 ```
 
 **Important:** Always use `-d bin` flag to compile to the bin/ directory, not src/
@@ -77,15 +77,6 @@ All console features are preserved:
 - Statistics (with RECURSIVE GPA counting)
 - Full input validation
 - Error handling with dialogs
-- Add Student (auto-generated ID)
-- Search by ID
-- Search by Last Name (RECURSIVE)
-- Update Student
-- Remove Student (with confirmation)
-- Sort (ID, Name, GPA)
-- Statistics (with RECURSIVE GPA counting)
-- Full input validation
-- Error handling with dialogs
 
 ---
 
@@ -94,7 +85,7 @@ The console version (`App.java`) provides the same functionality without requiri
 
 From project root directory:
 ```bash
-javac -d bin src/App.java src/Student.java src/StudentManager.java src/StudentView.java src/StudentController.java src/exceptions/*.java
+javac -d bin src/exceptions/*.java src/model/*.java src/util/*.java src/service/*.java src/manager/*.java src/view/StudentView.java src/controller/StudentController.java src/App.java
 java -cp bin App
 ```
 

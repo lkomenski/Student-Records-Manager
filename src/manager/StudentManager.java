@@ -60,7 +60,7 @@ public class StudentManager {
     private int parseIdNumberSafe(String id) {
         if (id == null) return 0;
         String cleaned = id.trim().toUpperCase();
-        if (!cleaned.matches("^S\\d{3}$")) return 0;
+        if (!cleaned.matches("^S\\d{3}$")) return 0; // regex: S followed by exactly 3 digits (e.g., S001)
         return Integer.parseInt(cleaned.substring(1));
     }
 

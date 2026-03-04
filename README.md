@@ -42,16 +42,16 @@ See [JAVAFX_SETUP.md](JAVAFX_SETUP.md) for detailed setup instructions.
 
 ## Features
 
-- Add students with auto-generated IDs (duplicate prevention)
+- Add students with auto-generated sequential IDs (S001, S002, ...) — IDs cannot be entered manually; duplicate IDs are rejected even if added programmatically (verified in `test/StudentManagerTest.java` Test 2)
 - List all students
-- Search by ID or last name (recursive)
+- Search by ID or last name (last name search uses recursion)
 - Update student information
-- Remove students (with confirmation)
+- Remove students (with confirmation prompt)
 - Sort by ID, last name, or GPA
-- View statistics (average GPA, highest GPA, recursive GPA distribution)
-- **Save/Load student data to/from CSV files**
-- **Import/export functionality for bulk data management**
-- **Sample data loading on startup**
+- View statistics (average GPA, highest GPA, count above GPA thresholds using recursion)
+- **Save/Load student data to/from CSV files** (replaces current records on load)
+- **Import from CSV** (appends to existing records without replacing them)
+- **Sample data loading on startup** (loads `sample_data.csv` automatically)
 
 ---
 
@@ -96,7 +96,7 @@ Both console and GUI versions follow **MVC (Model-View-Controller)** pattern wit
 
 **GUI Version**: [AppGUI.java](src/AppGUI.java), [StudentGUIView.java](src/view/StudentGUIView.java), [StudentGUIController.java](src/controller/StudentGUIController.java)
 
-**Design Benefits**: Separation of concerns, low coupling, code reusability, defensive programming
+This design keeps each layer focused on one responsibility, making the code easier to read, test, and extend.
 
 ---
 
@@ -110,11 +110,11 @@ Comprehensive **JUnit 5 test suite** with **16 automated unit tests** covering a
 
 Student records can be saved/loaded to CSV files for data persistence:
 
-**Save to CSV**: [StudentDataService.java](src/service/StudentDataService.java#L30-L55) - Exports all records with try-with-resources and proper error handling
+**Save to CSV**: [StudentDataService.java](src/service/StudentDataService.java#L38-L56) - Exports all records with try-with-resources and proper error handling
 
-**Load from CSV**: [StudentDataService.java](src/service/StudentDataService.java#L57-L145) - Imports records with validation and robust error handling (skips malformed lines)
+**Load from CSV**: [StudentDataService.java](src/service/StudentDataService.java#L70-L149) - Imports records with validation and robust error handling (skips malformed lines)
 
-**Import from CSV**: [StudentDataService.java](src/service/StudentDataService.java#L147-L220) - Appends records without clearing existing data, with duplicate detection
+**Import from CSV**: [StudentDataService.java](src/service/StudentDataService.java#L161-L223) - Appends records without clearing existing data, with duplicate detection
 
 **CSV Format**:
 ```csv
@@ -146,7 +146,7 @@ lib/junit-platform-console-*.jar     # Testing framework
 sample_data.csv                      # Sample data (other CSVs gitignored)
 ```
 
-**Package Benefits**: Clear separation by layer, easy navigation, scalable, follows Java enterprise conventions
+This structure separates code by layer, making it easy to navigate and understand each component's role.
 
 ---
 

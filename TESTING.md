@@ -12,10 +12,10 @@ The `StudentManager` class is unit-tested without UI dependencies, making it ide
 
 **Location**: `test/StudentManagerTest.java`  
 **Framework**: JUnit 5 (Jupiter)  
-**Total Tests**: 12 automated unit tests + 1 documented manual test  
+**Total Tests**: 16 automated unit tests + 1 documented manual test  
 **Coverage**: All CRUD operations, exception handling, and business logic
 
-### Required Test Cases (8)
+### Required Test Cases (8 automated + 1 manual)
 
 1. **Add student successfully** - Validates student addition to system
 2. **Add duplicate ID rejected** - Verifies `DuplicateStudentIdException` is thrown
@@ -29,10 +29,17 @@ The `StudentManager` class is unit-tested without UI dependencies, making it ide
 
 ### Bonus Test Cases (4)
 
-9. **Auto-generate student ID** - Tests `addStudentAutoId()` functionality
-10. **Search by last name (recursive)** - Validates recursive search algorithm
-11. **Update non-existent student** - Verifies `StudentNotFoundException` on update
-12. **Remove non-existent student** - Verifies `StudentNotFoundException` on remove
+10. **Auto-generate student ID** - Tests `addStudentAutoId()` functionality
+11. **Search by last name (recursive)** - Validates recursive search algorithm
+12. **Update non-existent student** - Verifies `StudentNotFoundException` on update
+13. **Remove non-existent student** - Verifies `StudentNotFoundException` on remove
+
+### CSV Persistence Test Cases (4)
+
+14. **Save to CSV** - Verifies file is created and non-empty after save
+15. **Load from CSV** - Confirms students are correctly loaded from file
+16. **CSV round-trip** - Saves and reloads data, verifies all fields are preserved
+17. **Load sample_data.csv** - Confirms the startup sample file exists and loads correctly
 
 ---
 
@@ -58,8 +65,8 @@ java -jar lib/junit-platform-console-standalone-1.10.1.jar execute --class-path 
 
 ```
 Test run finished after ~50 ms
-[        12 tests found           ]
-[        12 tests successful      ]
+[        16 tests found           ]
+[        16 tests successful      ]
 [         0 tests failed          ]
 ```
 
@@ -131,12 +138,11 @@ public Object newFeature() {
 
 ---
 
-## Continuous Integration
+## When to Run Tests
 
-Tests should be executed:
+Run the test suite:
 - Before committing code changes
 - After modifying `StudentManager.java`
-- During code reviews
 - Before project submission
 
 ---

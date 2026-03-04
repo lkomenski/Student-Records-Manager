@@ -81,13 +81,9 @@ public class Student implements Comparable<Student> {
         return firstName + " " + lastName;
     }
 
-    /** 
-     * Compares this student to another based on student ID (case-insensitive).
-     * This allows sorting by student ID in ascending order.
-     */
-
     /**
      * Default sort order: Student ID ascending (case-insensitive).
+     * Required by Comparable<Student> to enable Collections.sort().
      */
     @Override
     public int compareTo(Student other) {

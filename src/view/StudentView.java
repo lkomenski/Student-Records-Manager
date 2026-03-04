@@ -148,14 +148,14 @@ public class StudentView {
             scanner.nextLine(); // Consume newline
             
             if (choice >= 1 && choice <= 11) {
-                return choice;
+                return choice; // Base case: valid input received, stop recursion
             }
         } else {
             scanner.nextLine(); // Clear invalid input
         }
-        
+
         System.out.println("Invalid input! Please enter a number between 1 and 11.");
-        return promptForMenuChoice(); // Recursive call
+        return promptForMenuChoice(); // Recursive case: re-prompt until valid input
     }
 
     /**
